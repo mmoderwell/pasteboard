@@ -17,16 +17,155 @@
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<meta content="" name="description">
 	<meta name="keywords" content="">
-	<link rel="stylesheet" type="text/css" href="/css/resume.css">
+	<style type="text/css" media="screen">
+	body {
+		font-family: 'Open Sans', sans-serif;
+	}
+
+	.input-wrapper {
+		width: 500px;
+		position: relative;
+		display: inline-flex;
+	}
+
+	.input-wrapper::after {
+		content: attr(data-text);
+		font-size: 1.5rem;
+		line-height: 0;
+		height: 0;
+		max-width: 100%;
+		border-bottom: 3px solid #fff;
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		height: 3px;
+		overflow: hidden;
+		user-select: none;
+		color: transparent;
+	}
+
+	input {
+		color: #969696;
+		border: none;
+		padding: 0;
+		border-radius: 0;
+		outline: none;
+		width: auto;
+		min-width: 100%;
+		line-height: 3em;
+		border-bottom: 3px solid #333333;
+		background-color: transparent;
+	}
+
+	.contents {
+		padding: 5% 20%;
+	}
+
+	.header {
+		padding: 2% 0 5% 0;
+	}
+
+	#message {
+		transition: all ease-in .4s;
+		opacity: 0;
+		text-align: center;
+		color: #689cff;
+	}
+
+	.entry {
+		padding: 1px 10px;
+		background: #f3f3f3;
+		border-radius: 35px;
+		color: #212121;
+		display: inline-flex;
+		transition: all ease-in-out 1s;
+	}
+
+	.entry p {
+		padding: 0 25px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all ease .2s;
+	}
+
+	.entry p:hover {
+		color: #969696;
+	}
+
+	.icon {
+		display: inline-flex;
+		padding: 0 20px;
+		top: 7px;
+		position: relative;
+	}
+
+	.material-icons {
+		cursor: pointer;
+	}
+	</style>
 </head>
 
-<body style="font-family: 'Open Sans', sans-serif;">
-	<div class="contents" style="padding: 10% 20%;">
-		<div class="entry" id="0" style="padding: 1px 10px; background: #dededede; border-radius: 35px; color:#212121;display: flex;">
-			<p style="padding-left: 25px; font-weight: 600;">ssh -i interface.pem 10.0.0.222</p>
+<body>
+	<div class="contents">
+		<div class="header">
+			<div id="message">Hello</div>
+			<br>
+			<div class="input-wrapper" data-text="">
+				<input type="text" placeholder="Add a new snippet...">
+			</div>
+			<div class="icon" id="new"><i class="material-icons">add</i></div>
 		</div>
-		<div><i class="material-icons">face</i></div>
+		<div class="entry_div" id="0">
+			<div class="entry">
+				<p>ssh -i interface.pem 10.0.0.222</p>
+			</div>
+			<div class="icon" value=0><i class="material-icons">delete</i></div>
+		</div>
 	</div>
+	<script>
+	const new = document.getElementById('new');
+	const entries = document.querySelectorAll('.entry p');
+	const removers = document.querySelectorAll('.icon');
+	let message = document.getElementById('message');
+	let container = document.querySelector('contents');
+
+
+
+	//let storage = window.localStorage
+	let data = JSON.parse(localStorage.getItem("entries"));
+
+	console.log(data);
+
+	entries.forEach(entry => {
+		entry.addEventListener('click', () => {
+			const selection = window.getSelection();
+			const range = document.createRange();
+			range.selectNodeContents(entry);
+			selection.removeAllRanges();
+			selection.addRange(range);
+			document.execCommand('copy');
+			selection.removeAllRanges();
+			const original = entry.textContent;
+			message.textContent = 'Copied!';
+			message.style.opacity = '1';
+			setTimeout(() => {
+				message.style.opacity = '0';
+			}, 1200);
+
+		});
+	});
+
+	removers.forEach(rem => {
+		rem.addEventListener('click', (e) => {
+
+			let parent_div = e.parentElement;
+			console.log(parent_div);
+			setTimeout(() => {
+
+			}, 700);
+		});
+	});
+	</script>
 </body>
 
 </html>
