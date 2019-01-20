@@ -111,32 +111,46 @@
 			<div id="message">Hello</div>
 			<br>
 			<div class="input-wrapper" data-text="">
-				<input type="text" placeholder="Add a new snippet...">
+				<input id="new_entry" type="text" placeholder="Add a new snippet...">
 			</div>
 			<div class="icon" id="new"><i class="material-icons">add</i></div>
 		</div>
-		<div class="entry_div" id="0">
-			<div class="entry">
-				<p>ssh -i interface.pem 10.0.0.222</p>
-			</div>
-			<div class="icon" value=0><i class="material-icons">delete</i></div>
-		</div>
 	</div>
 	<script>
-	const new = document.getElementById('new');
-	const entries = document.querySelectorAll('.entry p');
-	const removers = document.querySelectorAll('.icon');
 	let message = document.getElementById('message');
-	let container = document.querySelector('contents');
+	let container = document.querySelector('.contents');
 
+	function addEntry() {
+		const new_entry = document.getElementById('new_entry');
+		console.log(new_entry.value);
+		if (new_entry.value) {
+			let data = JSON.parse(localStorage.getItem("entries"));
+			if (data) {
+				data[new_entry.value] = new_entry.value
+				localStorage.setItem("entries", JSON.stringify(data));
+			} else {
+				data = {}
+				data[new_entry.value] = new_entry.value
+				localStorage.setItem("entries", JSON.stringify(data));
+			}
+		}
+	}
+	const new_button = document.getElementById('new');
+	new_button.addEventListener('click', addEntry);
 
-
-	//let storage = window.localStorage
 	let data = JSON.parse(localStorage.getItem("entries"));
-
 	console.log(data);
-
-	entries.forEach(entry => {
+	for (let key in data) {
+		let div = document.createRange().createContextualFragment(`<div class="entry_div">
+					<div id="${data[key]}" class="entry">
+						<p>${data[key]}</p>
+					</div>
+					<div class="icon" id="del ${data[key]}"><i class="material-icons">delete</i></div>
+					</div>
+					<br>`);
+		container.appendChild(div);
+		let entry = document.getElementById(data[key]);
+		let remover = document.getElementById(`del ${data[key]}`);
 		entry.addEventListener('click', () => {
 			const selection = window.getSelection();
 			const range = document.createRange();
@@ -151,20 +165,13 @@
 			setTimeout(() => {
 				message.style.opacity = '0';
 			}, 1200);
-
 		});
-	});
 
-	removers.forEach(rem => {
-		rem.addEventListener('click', (e) => {
-
-			let parent_div = e.parentElement;
-			console.log(parent_div);
-			setTimeout(() => {
-
-			}, 700);
+		remover.addEventListener('click', () => {
+			let target = document.getElementById(`del ${data[key]}`);
+			console.log(target);
 		});
-	});
+	};
 	</script>
 </body>
 
