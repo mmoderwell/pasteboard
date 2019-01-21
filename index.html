@@ -18,15 +18,6 @@
 	<meta content="" name="description">
 	<meta name="keywords" content="">
 	<style type="text/css" media="screen">
-	*,
-	*:after,
-	*:before {
-		-webkit-box-sizing: border-box;
-		-moz-box-sizing: border-box;
-		-ms-box-sizing: border-box;
-		box-sizing: border-box;
-	}
-
 	html {
 		box-sizing: border-box;
 		transition: all ease-in-out .4s;
@@ -88,12 +79,7 @@
 	}
 
 	#new {
-		transition: all ease .2s;
 		font-size: 30px;
-	}
-
-	#new:hover {
-		transform: scale(1.2);
 	}
 
 	#new_div {
@@ -138,6 +124,11 @@
 		color: #969696;
 	}
 
+	.removed {
+		transition: all ease-in-out 0.25s;
+		transform: translateX(-70%);
+	}
+
 	.icon {
 		display: inline-flex;
 		padding: 0 20px;
@@ -146,7 +137,12 @@
 	}
 
 	.material-icons {
+		transition: all ease .2s;
 		cursor: pointer;
+	}
+
+	.material-icons:hover {
+		transform: scale(1.2);
 	}
 	</style>
 </head>
@@ -200,7 +196,11 @@
 			let target = document.getElementById(`del ${data[text]}`);
 			delete data[text]
 			localStorage.setItem("entries", JSON.stringify(data));
-			target.parentNode.parentNode.removeChild(target.parentNode);
+			target.parentNode.classList += " removed";
+			setTimeout(() => {
+				target.parentNode.parentNode.removeChild(target.parentNode);
+			}, 250);
+
 		});
 	};
 
