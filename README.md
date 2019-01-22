@@ -9,13 +9,13 @@ all your snippets will stil be there. Just click on a snippet you've added and i
 
 ## Authors
 
-* **Matt Moderwell** - *Initial work* - [mmoderwell](https://github.com/mmoderwell)
+* **Matt Moderwell** - *Initial work* - [mmoderwell](https://mmoderwell.com)
 
 See also the list of [contributors](https://github.com/mmoderwell/pasteboard/contributors) who participated in this project.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License; go ahead and do whatever you like with it.
 
 ## Inspiration
 I was inspired by my need to copy and paste things all day at work. I wanted something that would be easy and quick to use,
