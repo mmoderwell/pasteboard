@@ -83,7 +83,11 @@
 	}
 
 	#new_div {
-		top: 20px;
+		top: 10px;
+	}
+
+	#new_div2 {
+		top: 10px;
 	}
 
 	.contents {}
@@ -101,6 +105,10 @@
 
 	.entry_div {
 		padding: 10px 0;
+	}
+
+	#description_entry {
+		display: none;
 	}
 
 	.entry {
@@ -144,6 +152,12 @@
 	.material-icons:hover {
 		transform: scale(1.2);
 	}
+
+	.description {
+		font-size: 0.9rem;
+		text-indent: 1em;
+		color: #7C7C7C;
+	}
 	</style>
 </head>
 
@@ -152,10 +166,14 @@
 		<div class="header">
 			<div id="message">Hello</div>
 			<br>
-			<div class="input-wrapper" data-text="">
+			<div class="input-wrapper" id="snippet_entry" data-text="">
 				<input id="new_entry" type="text" placeholder="Add a new snippet...">
+				<div class="icon" id="new_div"><i id="new" class="material-icons">navigate_next</i></div>
 			</div>
-			<div class="icon" id="new_div"><i id="new" class="material-icons">add</i></div>
+			<div class="input-wrapper" id="description_entry" data-text="">
+				<input id="new_entry_desc" type="text" placeholder="Optional: a short description of the snippet">
+				<div class="icon" id="new_div2"><i id="new2" class="material-icons">add</i></div>
+			</div>
 		</div>
 		<div class="contents">
 		</div>
@@ -164,9 +182,10 @@
 	let message = document.getElementById('message');
 	let container = document.querySelector('.contents');
 
-	function renderEntry(text) {
+	function renderEntry(text, description) {
 		let data = JSON.parse(localStorage.getItem("entries"));
 		let div = document.createRange().createContextualFragment(`<div class="entry_div">
+					<p class="description">${description}</p>
 					<div id="${text}" class="entry">
 						<p>${text}</p>
 					</div>
@@ -193,7 +212,7 @@
 		});
 
 		remover.addEventListener('click', () => {
-			let target = document.getElementById(`del ${data[text]}`);
+			let target = document.getElementById(`del ${data[text][0]}`);
 			delete data[text]
 			localStorage.setItem("entries", JSON.stringify(data));
 			target.parentNode.classList += " removed";
@@ -204,46 +223,79 @@
 		});
 	};
 
+	function enter_handler2(e) {
+		if (e.keyCode === 13) {
+			addEntry2()
+		}
+	}
+
+	function enter_handler(e) {
+		if (e.keyCode === 13) {
+			addEntry()
+		}
+	}
+
+	function addEntry2() {
+		const new_entry = document.getElementById('new_entry');
+		const new_entry2 = document.getElementById('new_entry_desc');
+		let data = JSON.parse(localStorage.getItem("entries"));
+		document.removeEventListener('keyup', enter_handler2);
+		document.addEventListener('keyup', enter_handler);
+
+		if (data) {
+			data[new_entry.value] = [new_entry.value, new_entry2.value]
+			localStorage.setItem("entries", JSON.stringify(data));
+			renderEntry(new_entry.value, new_entry2.value);
+			new_entry.value = '';
+			new_entry2.value = '';
+			document.getElementById('snippet_entry').style.display = 'inline-flex';
+			document.getElementById('description_entry').style.display = 'none';
+		} else {
+			data = {}
+			data[new_entry.value] = [new_entry.value, new_entry2.value]
+			localStorage.setItem("entries", JSON.stringify(data));
+			renderEntry(new_entry.value, new_entry2.value);
+			new_entry.value = '';
+			new_entry2.value = '';
+			document.getElementById('snippet_entry').style.display = 'inline-flex';
+			document.getElementById('description_entry').style.display = 'none';
+		}
+	}
+
 	function addEntry() {
 		const new_entry = document.getElementById('new_entry');
+		const new_entry2 = document.getElementById('new_entry_desc');
 		if (new_entry.value) {
-			let data = JSON.parse(localStorage.getItem("entries"));
-			if (data) {
-				data[new_entry.value] = new_entry.value
-				localStorage.setItem("entries", JSON.stringify(data));
-				renderEntry(new_entry.value);
-				new_entry.value = '';
-			} else {
-				data = {}
-				data[new_entry.value] = new_entry.value
-				localStorage.setItem("entries", JSON.stringify(data));
-				renderEntry(new_entry.value);
-				new_entry.value = '';
-			}
+			// move to next stage, adding description
+			document.getElementById('snippet_entry').style.display = 'none';
+			document.getElementById('description_entry').style.display = 'inline-flex';
+
+			document.getElementById('new').removeEventListener('click', addEntry);
+			document.getElementById('new2').addEventListener('click', addEntry2);
+			document.removeEventListener('keyup', enter_handler);
+			document.addEventListener('keyup', enter_handler2);
 		}
 	}
 
 
 	const new_button = document.getElementById('new');
 	new_button.addEventListener('click', addEntry);
-	document.addEventListener('keyup', function (e) {
-		if (e.keyCode === 13) {
-			addEntry()
-		}
-	});
+	document.addEventListener('keyup', enter_handler);
 
 	let data = JSON.parse(localStorage.getItem("entries"));
 	for (let key in data) {
+		console.log(key)
 		let div = document.createRange().createContextualFragment(`<div class="entry_div">
-					<div id="${data[key]}" class="entry">
-						<p>${data[key]}</p>
+					<p class="description">${data[key][1]}</p>
+					<div id="${data[key][0]}" class="entry">
+						<p>${data[key][0]}</p>
 					</div>
-					<div class="icon" id="del ${data[key]}"><i class="material-icons">delete</i></div>
+					<div class="icon" id="del ${data[key][0]}"><i class="material-icons">delete</i></div>
 					</div>
 					`);
 		container.insertBefore(div, container.firstChild);
-		let entry = document.getElementById(data[key]);
-		let remover = document.getElementById(`del ${data[key]}`);
+		let entry = document.getElementById(data[key][0]);
+		let remover = document.getElementById(`del ${data[key][0]}`);
 		entry.addEventListener('click', () => {
 			const selection = window.getSelection();
 			const range = document.createRange();
@@ -261,7 +313,7 @@
 		});
 
 		remover.addEventListener('click', () => {
-			let target = document.getElementById(`del ${data[key]}`);
+			let target = document.getElementById(`del ${data[key][0]}`);
 			delete data[key]
 			localStorage.setItem("entries", JSON.stringify(data));
 			target.parentNode.parentNode.removeChild(target.parentNode);
